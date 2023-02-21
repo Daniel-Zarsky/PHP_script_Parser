@@ -17,7 +17,7 @@
      else if(preg_match("/int@(-|)[0-9]*/", $string)){
          return true;
      }
-     else if(preg_match("/nil@nil/", $string)){
+     else if(preg_match("/nil@(nil|nill)/", trim($string))){
            return true;
      }
      else if(preg_match("/^string@[^#\s\\\\]*(?:\\\\[0-9]{3}[^#\s\\\\]*)*$/", trim($string))){
@@ -33,7 +33,7 @@
 
    function check_label($string){
 
-       if(preg_match("~^[a-zA-Z_\-$&%*][a-zA-Z0-9_\-$&%*]*$~", trim($string)))//identifier check
+       if(preg_match("~^[a-zA-Z_\-$&%*!?][a-zA-Z0-9_\-$&%*!?]*$~", trim($string)))//identifier check
        {
            return true;
        }
@@ -55,27 +55,8 @@
 
    function convert_string($input){
 
-       if(strpos($input, "\"")){
-           str_replace("\"", "&quot", $input);
-       }
-
-       if(strpos($input, "'")){
-           str_replace("'", "&apos", $input);
-       }
-
-       if(strpos($input, "&")){
-           str_replace("&", "&amp", $input);
-       }
-
-       if(strpos($input, "<")){
-           str_replace("&", "&lt", $input);
-       }
-
-       if(strpos($input, "<")){
-           str_replace("&", "&gt", $input);
-       }
-
-       return $input;
+       $new = htmlspecialchars($input,ENT_QUOTES, null);
+       return $new;
 
    }
 ?>
