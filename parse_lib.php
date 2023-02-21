@@ -20,8 +20,11 @@
      else if(preg_match("/nil@nil/", $string)){
            return true;
      }
-
-     else {
+     else if(preg_match("/^string@[^#\s\\\\]*(?:\\\\[0-9]{3}[^#\s\\\\]*)*$/", $string)){
+         return true;
+     }
+     else{
+         echo("bad symbol");
          return false;
      }
 

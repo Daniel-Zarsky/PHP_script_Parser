@@ -2,7 +2,6 @@
 
        include 'parse_lib.php';
 
-
        ini_set('display_errors', 'stderr');
 
        echo("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -20,59 +19,270 @@
             else exit(10); // bad argument
         }
 
-        $head = false;
+        $header = false;
         $in_count =0;
-        // loading input
+
         while($line = fgets(STDIN)){
 
-            if(!$head){  //header check
+             $line = cut_comment($line); //cut comment
 
-                if(trim($line) != ".IPPcode23"){
+              if(!$header){             //check header
+                  if(trim($line) == ".IPPcode23"){
+                      $header =true; //header ok
+                      echo("<program language=\"IPPcode23\">\n");
+                      continue;
+                  }
+                  else{
+                      exit(21); //missing header
+                  }
+              }
 
-                    exit(21); //missing header
-                }
-                echo("<program language=\"IPPcode23\">\n");
-                $head = true;
-                continue;
-            }
-            $in_count++;
-            $lexemes = explode(" ", trim($line)); //dividing lexemes
+             $lexemes = explode(" ", trim($line)); //split the input into lexemes, trim empty lines
 
-            switch(strtoupper($lexemes[0])){ //instruction
-                case 'MOVE':
-                    echo("\t<instruction order=".$in_count." opcode=".strtoupper($lexemes[0]).">\n");
+             if($lexemes[0]==""){ //empty array after cutting new line
+                 continue;
+             }
 
-                    echo("\t</instruction>\n"); //end of instruction
-                    break;
-                case'DEFVAR':
-                    echo("\t<instruction order=".$in_count." opcode=".strtoupper($lexemes[0]).">\n");
+             $in_count ++; //new valid instruction
+             $inst = $lexemes[0]; ///after cutting and trimming the first wor in line is instruction
 
-                    if(preg_match("/(LF|GF|TF)@[-a-zA-Z_$&%*!?][-a-zA-Z_$&%*!?0-9]*/", $lexemes[1]))//identifier check
-                    {
-                        echo("\t\t<arg1 type=\"var\">".$lexemes[1]."</arg1>\n"); //valid
-                    } else {
-                        exit(23); //invalid identifier
-                    }
+             switch(strtoupper($inst)){
 
-                    echo("\t</instruction>\n"); //end of instruction
-                    break;
+                 case'DEFVAR':
+                 case 'POPS':
+                     echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
+                     if(check_variable($lexemes[1])){
+                         echo("  <arg1 type=\"var\">".$lexemes[1]."</arg1>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
 
-                default: //unknown lexeme
-                    if(isValidComment($lexemes[0])){ //is it comment?
-                        $in_count--;
-                    }
-                    else{
-                        exit(22); //unknown instruction
-                    }
+                     echo(" </instruction>\n");
+
+                     if(count($lexemes)>2){
+                         exit(23);
+                     }
+                     break;
+
+                 case'MOVE':
+
+                 case 'INT2CHAR':
+                 case 'STRLEN':
+                 case 'TYPE':
+
+                     echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
+                     if(check_variable($lexemes[1])){
+                         echo("  <arg1 type=\"var\">".$lexemes[1]."</arg1>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+                     if(check_symbol($lexemes[2])){
+                         echo("  <arg2 type=\"".substr($lexemes[2], 0, strpos($lexemes[2], "@"))."\">".substr($lexemes[2], strpos($lexemes[2], "@"),0)."</arg2>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+
+                     if(count($lexemes)>3){
+                         exit(23);
+                     }
+
+                     echo(" </instruction>\n");
+                     break;
+
+                 case'PUSHFRAME':
+                 case'CREATEFRAME':
+                 case'POPFRAME':
+                 case 'BREAK':
+                     echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\"/>\n");
+                     if(count($lexemes)>1){
+                         exit(23);
+                     }
+                     break;
+
+                 case 'LABEL':
+                 case 'JUMP':
+                 case'CALL':
+                     echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
+                     if(check_label($lexemes[1])){
+                         echo("  <arg1 type=\"label\">".$lexemes[1]."</arg1>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+
+                     echo(" </instruction>\n");
+
+                     if(count($lexemes)>2){
+                         exit(23);
+                     }
+                     break;
+
+                 case'RETURN':
+                     echo(" <instruction order=\"".$in_count."\" opcode=\"RETURN\"/>\n");
+                     if(count($lexemes)>1){
+                         exit(23);
+                     }
+                     break;
+
+                 case'PUSHS':
+                     echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
+                     if(check_symbol($lexemes[1])){
+                         echo("  <arg1 type=\"".substr($lexemes[1], 0, strpos($lexemes[1], "@"))."\">".substr($lexemes[1], strpos($lexemes[1], "@"),0)."</arg1>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+
+                     echo(" </instruction>\n");
+
+                     if(count($lexemes)>2){
+                         exit(23);
+                     }
+                     break;
+
+                 case 'ADD':
+                 case 'SUB':
+                 case 'MUL':
+                 case 'IDIV':
+
+                 case 'LT':
+                 case 'GT':
+                 case 'EQ':
+
+                 case 'AND':
+                 case 'OR':
+                 case 'NOT':
+
+                 case 'STR2INT':
+
+                 case 'GETCHAR':
+                 case 'CONCAT':
+                 case 'SETCHAR':
+
+                     echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
+                     if(check_variable($lexemes[1])){
+                         echo("  <arg1 type=\"var\">".$lexemes[1]."</arg1>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+                     if(check_symbol($lexemes[2])){
+                         echo("  <arg2 type=\"".substr($lexemes[2], 0, strpos($lexemes[2], "@"))."\">".substr($lexemes[2], strpos($lexemes[2], "@"),0)."</arg2>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+                     if(check_symbol($lexemes[3])){
+                         echo("  <arg3 type=\"".substr($lexemes[3], 0, strpos($lexemes[3], "@"))."\">".substr($lexemes[3], strpos($lexemes[3], "@"),0)."</arg3>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+
+                     if(count($lexemes)>4){
+                         exit(23);
+                     }
+
+                     echo(" </instruction>\n");
+                     break;
+
+                 case 'READ':
+                     echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
+                     if(check_variable($lexemes[1])){
+                         echo("  <arg1 type=\"var\">".$lexemes[1]."</arg1>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+
+                     if(($lexemes[2] == "bool")||($lexemes[2] == "int")||($lexemes[2] == "string")){
+                         echo("  <arg2 type=\"type\">".$lexemes[2]."</arg2>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+                     if(count($lexemes)>3){
+                         exit(23);
+                     }
+
+                     echo(" </instruction>\n");
+                     break;
+                 case 'WRITE':
+                 case 'EXIT':
+                 case 'DPRINT':
+                     echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
+                     if(check_symbol($lexemes[1])){
+                         echo("  <arg3 type=\"".substr($lexemes[1], 0, strpos($lexemes[1], "@"))."\">".substr($lexemes[1], strpos($lexemes[1], "@"),0)."</arg3>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+                     echo(" </instruction>\n");
+
+                         if(count($lexemes)>2){
+                             exit(23);
+                         }
+
+                     break;
+
+                 case 'JUMPIFEQ':
+                 case 'JUMPIFNEQ':
+                 echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
+                 if(check_label($lexemes[1])){
+                     echo("  <arg1 type=\"var\">".$lexemes[1]."</arg1>\n");
+                 }
+                 else{
+                     exit(23);
+                 }
+                 if(check_symbol($lexemes[2])){
+                     echo("  <arg2 type=\"".substr($lexemes[2], 0, strpos($lexemes[2], "@"))."\">".substr($lexemes[2], strpos($lexemes[2], "@"),0)."</arg2>\n");
+                 }
+                 else{
+                     exit(23);
+                 }
+                 if(check_symbol($lexemes[3])){
+                     echo("  <arg3 type=\"".substr($lexemes[3], 0, strpos($lexemes[3], "@"))."\">".substr($lexemes[3], strpos($lexemes[3], "@"),0)."</arg3>\n");
+                 }
+                 else{
+                     exit(23);
+                 }
+
+                 if(count($lexemes)>4){
+                     exit(23);
+                 }
+
+                 echo(" </instruction>\n");
+                     break;
+
+                 default:
+                     exit(22);
 
 
-            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+             }
+
 
 
 
         }
 
-
+        echo("</program>\n");
 
     
 
