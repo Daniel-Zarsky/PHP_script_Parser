@@ -24,7 +24,7 @@
          return true;
      }
      else{
-         echo("bad symbol");
+
          return false;
      }
 
