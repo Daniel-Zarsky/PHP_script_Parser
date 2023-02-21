@@ -1,7 +1,7 @@
 <?php
 
    function check_variable($string){
-       if(preg_match("/(LF|GF|TF)@[-a-zA-Z_$&%*!?][-a-zA-Z_$&%*!?0-9]*/", $string))//identifier check
+       if(preg_match("/(LF|GF|TF)@[-a-zA-Z_$&%*!?][-a-zA-Z_$&%*!?0-9]*/", trim($string)))//identifier check
        {
          return true;
        }
@@ -20,7 +20,7 @@
      else if(preg_match("/nil@nil/", $string)){
            return true;
      }
-     else if(preg_match("/^string@[^#\s\\\\]*(?:\\\\[0-9]{3}[^#\s\\\\]*)*$/", $string)){
+     else if(preg_match("/^string@[^#\s\\\\]*(?:\\\\[0-9]{3}[^#\s\\\\]*)*$/", trim($string))){
          return true;
      }
      else{
@@ -33,7 +33,7 @@
 
    function check_label($string){
 
-       if(preg_match("/[-a-zA-Z_$&%*!?][-a-zA-Z_$&%*!?0-9]*/", $string))//identifier check
+       if(preg_match("~^[a-zA-Z_\-$&%*][a-zA-Z0-9_\-$&%*]*$~", trim($string)))//identifier check
        {
            return true;
        }
@@ -74,6 +74,8 @@
        if(strpos($input, "<")){
            str_replace("&", "&gt", $input);
        }
+
+       return $input;
 
    }
 ?>

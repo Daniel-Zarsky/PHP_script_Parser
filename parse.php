@@ -79,7 +79,7 @@
                          exit(23);
                      }
                      if(check_symbol($lexemes[2])){
-                         echo("  <arg2 type=\"".substr($lexemes[2], 0, strpos($lexemes[2], "@"))."\">".substr($lexemes[2], strpos($lexemes[2], "@"),0)."</arg2>\n");
+                         echo("  <arg2 type=\"".substr($lexemes[2], 0, strpos($lexemes[2], "@"))."\">".convert_string(substr($lexemes[2], strpos($lexemes[2], "@")+1,strlen($lexemes[2])-strpos($lexemes[2], "@")))."</arg2>\n");
                      }
                      else{
                          exit(23);
@@ -127,21 +127,6 @@
                      }
                      break;
 
-                 case'PUSHS':
-                     echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
-                     if(check_symbol($lexemes[1])){
-                         echo("  <arg1 type=\"".substr($lexemes[1], 0, strpos($lexemes[1], "@"))."\">".substr($lexemes[1], strpos($lexemes[1], "@"),0)."</arg1>\n");
-                     }
-                     else{
-                         exit(23);
-                     }
-
-                     echo(" </instruction>\n");
-
-                     if(count($lexemes)>2){
-                         exit(23);
-                     }
-                     break;
 
                  case 'ADD':
                  case 'SUB':
@@ -156,7 +141,7 @@
                  case 'OR':
                  case 'NOT':
 
-                 case 'STR2INT':
+                 case 'STRI2INT':
 
                  case 'GETCHAR':
                  case 'CONCAT':
@@ -169,14 +154,14 @@
                      else{
                          exit(23);
                      }
-                     if(check_symbol($lexemes[2])){
-                         echo("  <arg2 type=\"".substr($lexemes[2], 0, strpos($lexemes[2], "@"))."\">".substr($lexemes[2], strpos($lexemes[2], "@"),0)."</arg2>\n");
+                     if(check_symbol($lexemes[2])||check_variable($lexemes[2])){
+                         echo("  <arg2 type=\"".substr($lexemes[2], 0, strpos($lexemes[2], "@"))."\">".convert_string(substr($lexemes[2], strpos($lexemes[2], "@")+1,strlen($lexemes[2])-strpos($lexemes[2], "@")))."</arg2>\n");
                      }
                      else{
                          exit(23);
                      }
-                     if(check_symbol($lexemes[3])){
-                         echo("  <arg3 type=\"".substr($lexemes[3], 0, strpos($lexemes[3], "@"))."\">".substr($lexemes[3], strpos($lexemes[3], "@"),0)."</arg3>\n");
+                     if(check_symbol($lexemes[3])||check_variable($lexemes[3])){
+                         echo("  <arg3 type=\"".substr($lexemes[3], 0, strpos($lexemes[3], "@"))."\">".convert_string(substr($lexemes[3], strpos($lexemes[3], "@")+1,strlen($lexemes[3])-strpos($lexemes[3], "@")))."</arg3>\n");
                      }
                      else{
                          exit(23);
@@ -213,9 +198,10 @@
                  case 'WRITE':
                  case 'EXIT':
                  case 'DPRINT':
+                 case 'PUSHS':
                      echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
                      if(check_symbol($lexemes[1])){
-                         echo("  <arg3 type=\"".substr($lexemes[1], 0, strpos($lexemes[1], "@"))."\">".substr($lexemes[1], strpos($lexemes[1], "@"),0)."</arg3>\n");
+                         echo("  <arg1 type=\"".substr($lexemes[1], 0, strpos($lexemes[1], "@"))."\">".convert_string(substr($lexemes[1], strpos($lexemes[1], "@")+1, strlen($lexemes[1])-strpos($lexemes[1], "@")))."</arg1>\n");
                      }
                      else{
                          exit(23);
@@ -231,28 +217,28 @@
                  case 'JUMPIFEQ':
                  case 'JUMPIFNEQ':
                  echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
-                 if(check_label($lexemes[1])){
-                     echo("  <arg1 type=\"var\">".$lexemes[1]."</arg1>\n");
-                 }
-                 else{
-                     exit(23);
-                 }
-                 if(check_symbol($lexemes[2])){
-                     echo("  <arg2 type=\"".substr($lexemes[2], 0, strpos($lexemes[2], "@"))."\">".substr($lexemes[2], strpos($lexemes[2], "@"),0)."</arg2>\n");
-                 }
-                 else{
-                     exit(23);
-                 }
-                 if(check_symbol($lexemes[3])){
-                     echo("  <arg3 type=\"".substr($lexemes[3], 0, strpos($lexemes[3], "@"))."\">".substr($lexemes[3], strpos($lexemes[3], "@"),0)."</arg3>\n");
-                 }
-                 else{
-                     exit(23);
-                 }
+                     if(check_label($lexemes[1])){
+                         echo("  <arg1 type=\"label\">".$lexemes[1]."</arg1>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+                     if(check_symbol($lexemes[2])){
+                         echo("  <arg2 type=\"".substr($lexemes[2], 0, strpos($lexemes[2], "@"))."\">".convert_string(substr($lexemes[2], strpos($lexemes[2], "@")+1,strlen($lexemes[2])-strpos($lexemes[2], "@")))."</arg2>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
+                     if(check_symbol($lexemes[3])){
+                         echo("  <arg3 type=\"".substr($lexemes[3], 0, strpos($lexemes[3], "@"))."\">".convert_string(substr($lexemes[3], strpos($lexemes[3], "@")+1,strlen($lexemes[3])-strpos($lexemes[3], "@")))."</arg3>\n");
+                     }
+                     else{
+                         exit(23);
+                     }
 
-                 if(count($lexemes)>4){
-                     exit(23);
-                 }
+                     if(count($lexemes)>4){
+                         exit(23);
+                     }
 
                  echo(" </instruction>\n");
                      break;
