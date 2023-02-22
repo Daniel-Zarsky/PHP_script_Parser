@@ -14,11 +14,11 @@
      if(preg_match("/bool@(true|false)/", $string)){
          return true;
      }
-     else if(preg_match("/int@(-|)[0-9]*/", $string)){
+     else if(preg_match("~^int@[+-]?[0-9]+$~", $string)){ //else if(preg_match("/int@(-|)[0-9]*/", $string)){
          return true;
      }
-     else if(preg_match("/nil@(nil|nill)/", trim($string))){
-           return true;
+     else if($string == "nil@nil"){
+         return true;
      }
      else if(preg_match("/^string@[^#\s\\\\]*(?:\\\\[0-9]{3}[^#\s\\\\]*)*$/", trim($string))){
          return true;
@@ -50,7 +50,8 @@
 
             $comm_count++;
         }
-        return $line;
+
+        return trim($line);
    }
 
    function convert_string($input){

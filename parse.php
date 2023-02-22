@@ -25,7 +25,9 @@
 
         while($line = fgets(STDIN)){
 
-             $line = cut_comment($line); //cut comment
+
+
+            $line = cut_comment($line); //cut comment
 
               if(!$header){             //check header
                   if(trim($line) == ".IPPcode23"){
@@ -33,7 +35,7 @@
                       echo("<program language=\"IPPcode23\">\n");
                       continue;
                   }
-                  else if(strpos($line, "#")){ ///comment on the first line
+                  else if(str_contains($line, "#") || trim($line) == ""){ ///comment on the first line
                       continue;
                   }
                   else{
@@ -41,21 +43,23 @@
                   }
               }
 
-             $lexemes = explode(" ", trim($line)); //split the input into lexemes, trim empty lines
+            // $lexemes = explode(" ", trim($line, '\n')); //split the input into lexemes, trim empty lines
 
-             if($lexemes[0]==""){ //empty array after cutting new line
+            $lexemes = preg_split('/\s+/', $line);
+
+             if($lexemes[0]=="" || str_contains($lexemes[0], "#")){ //empty array after cutting new line
                  continue;
              }
 
              $in_count ++; //new valid instruction
              $inst = $lexemes[0]; ///after cutting and trimming the first wor in line is instruction
 
-             switch(strtoupper($inst)){
+             switch(trim(strtoupper($inst))){
 
                  case'DEFVAR':
                  case 'POPS':
                      echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
-                     if(check_variable($lexemes[1])){
+                     if(check_variable(trim($lexemes[1]))){
                          echo("  <arg1 type=\"var\">".convert_string($lexemes[1])."</arg1>\n");
                      }
                      else{
@@ -215,6 +219,7 @@
 
                      echo(" </instruction>\n");
                      break;
+
                  case 'WRITE':
                  case 'EXIT':
                  case 'DPRINT':
@@ -273,7 +278,8 @@
 
                  echo(" </instruction>\n");
                      break;
-                 case '':
+                 case '#':
+                     $in_count --;
                     break;
 
                  default:
