@@ -246,14 +246,22 @@
                      else{
                          exit(23);
                      }
+
                      if(check_symbol($lexemes[2])){
                          echo("  <arg2 type=\"".substr($lexemes[2], 0, strpos($lexemes[2], "@"))."\">".convert_string(substr($lexemes[2], strpos($lexemes[2], "@")+1,strlen($lexemes[2])-strpos($lexemes[2], "@")))."</arg2>\n");
+                     }
+                     else if(check_variable($lexemes[2])){
+                         echo("  <arg2 type=\"var\">".$lexemes[2]."</arg2>\n");
                      }
                      else{
                          exit(23);
                      }
+
                      if(check_symbol($lexemes[3])){
                          echo("  <arg3 type=\"".substr($lexemes[3], 0, strpos($lexemes[3], "@"))."\">".convert_string(substr($lexemes[3], strpos($lexemes[3], "@")+1,strlen($lexemes[3])-strpos($lexemes[3], "@")))."</arg3>\n");
+                     }
+                     else if(check_variable($lexemes[2])){
+                         echo("  <arg3 type=\"var\">".$lexemes[3]."</arg3>\n");
                      }
                      else{
                          exit(23);
