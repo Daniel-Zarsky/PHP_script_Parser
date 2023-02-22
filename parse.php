@@ -74,6 +74,7 @@
                  case 'INT2CHAR':
                  case 'STRLEN':
                  case 'TYPE':
+                 case 'NOT':
 
                      echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
                      if(check_variable($lexemes[1])){
@@ -93,7 +94,7 @@
 
                      }
                      else{
-                         echo("neni ani jedno");
+
                          exit(23);
 
                      }
@@ -152,7 +153,6 @@
 
                  case 'AND':
                  case 'OR':
-                 case 'NOT':
 
                  case 'STRI2INT':
 
@@ -161,7 +161,7 @@
                  case 'SETCHAR':
 
                      echo(" <instruction order=\"".$in_count."\" opcode=\"".strtoupper($lexemes[0])."\">\n");
-                     if(check_variable($lexemes[1])){
+                     if(check_variable(trim($lexemes[1]))){
                          echo("  <arg1 type=\"var\">".$lexemes[1]."</arg1>\n");
                      }
                      else{
@@ -178,13 +178,13 @@
                      }
 
 
-                         if (check_symbol($lexemes[3])) {
-                             echo("  <arg3 type=\"".substr($lexemes[3], 0, strpos($lexemes[3], "@"))."\">".convert_string(substr($lexemes[3], strpos($lexemes[3], "@") + 1, strlen($lexemes[3]) - strpos($lexemes[3], "@")))."</arg3>\n");
-                         } else if (check_variable($lexemes[3])) {
-                             echo("  <arg3 type=\"var\">" .$lexemes[3] . "</arg3>\n");
-                         } else {
-                             exit(23);
-                         }
+                     if (check_symbol($lexemes[3])) {
+                         echo("  <arg3 type=\"".substr($lexemes[3], 0, strpos($lexemes[3], "@"))."\">".convert_string(substr($lexemes[3], strpos($lexemes[3], "@") + 1, strlen($lexemes[3]) - strpos($lexemes[3], "@")))."</arg3>\n");
+                     } else if (check_variable($lexemes[3])) {
+                         echo("  <arg3 type=\"var\">" .$lexemes[3] . "</arg3>\n");
+                     } else {
+                         exit(23);
+                     }
 
 
                      if(count($lexemes)>4){
@@ -260,7 +260,7 @@
                      if(check_symbol($lexemes[3])){
                          echo("  <arg3 type=\"".substr($lexemes[3], 0, strpos($lexemes[3], "@"))."\">".convert_string(substr($lexemes[3], strpos($lexemes[3], "@")+1,strlen($lexemes[3])-strpos($lexemes[3], "@")))."</arg3>\n");
                      }
-                     else if(check_variable($lexemes[2])){
+                     else if(check_variable($lexemes[3])){
                          echo("  <arg3 type=\"var\">".$lexemes[3]."</arg3>\n");
                      }
                      else{
@@ -274,7 +274,7 @@
                  echo(" </instruction>\n");
                      break;
                  case '':
-                     continue;
+                    break;
 
                  default:
                      exit(22);
