@@ -20,7 +20,7 @@
      else if($string == "nil@nil"){
          return true;
      }
-     else if(preg_match("/^string@[^#\s\\\\]*(?:\\\\[0-9]{3}[^#\s\\\\]*)*$/", trim($string))){
+     else if(preg_match("/^string@[^#\s\\\\]*(?:\\\\[0-9][0-9][0-9][^#\s\\\\]*)*$/", trim($string))){
          return true;
      }
      else{
